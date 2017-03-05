@@ -51,11 +51,19 @@
                 var center_y = d3.mean(coords, function(d) {
                     return d[1];
                 });
+                var countries = d3.set();
+
+                leaves.forEach(function(d) {
+                    countries.add(d['country_txt']);
+                });
+
                 return {
                   'nkill' : total,
                   'x' : center_x,
-                  'y' : center_y
+                  'y' : center_y,
+                  'countries' : countries.values()
                 };
+                
             }
 
 
@@ -72,6 +80,9 @@
             var radius = d3.scale.sqrt()
                            .domain([0, attendance_max])
                            .range([2, 20]);
+            function key_func(d) {
+                return d['key'];
+            }
 
             svg.append('g')
                .attr("class", "bubble")
@@ -91,7 +102,58 @@
               //YOUR CODE HERE
 
         }
+        function update(year) {
+              var filtered = nested.filter(function(d) {
+                  return new Date(d['key']) === year;
+              });
 
+              var circles = svg.selectAll('circle')
+                               .data(filtered, key_func);
+
+              circles.exit().remove();
+
+              circles.enter()
+                     .append("circle")
+                     .attr('cx', function(d) { return d.values['x']; })
+                     .attr('cy', function(d) { return d.values['y']; })
+                     .attr('r', function(d) {
+                        return radius(d.values['nkill']);
+                     });
+
+              var countries = filtered[0].values['countries'];
+
+              function update_countries(d) {
+                  if(countries.indexOf(d.properties.name) !== -1) {
+                      return "lightBlue";
+                  } else {
+                      return 'white';
+                  }
+              }
+
+              svg.selectAll('path')
+                 .style('fill', update_countries)
+                 .style('stroke', update_countries);
+
+          var years=[];
+          for (var i = 1970; i< 2015; i+=1){
+            years.push(i);
+          }
+          var year_idx=0;
+          var year_interval = setInterval(function(d){
+            update(years[year_idx]);
+            year_idx++;
+            if(year_idx>=years.length){
+              clearInterval(year_interval);
+            }
+          }, 100);
+
+
+
+          };
+
+          
+      
+      
         var format = d3.time.format("%d-%m-%Y (%H:%M h)");
 
         d3.tsv("data.txt", function(d) {
