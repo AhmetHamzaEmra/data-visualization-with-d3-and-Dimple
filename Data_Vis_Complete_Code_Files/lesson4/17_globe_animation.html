@@ -10,6 +10,16 @@
         stroke-width: 0.7;
         opacity: 0.7;
       }
+      div.years_buttons {
+          position: fixed;
+          top: 5px;
+          left: 50px;
+      }  
+      div.years_buttons div {
+          background-color: rgb(251, 201, 127);
+          padding: 3px;
+          margin: 7px;
+      }
     </style>
     <script type="text/javascript">  
       function draw(geo_data) {
@@ -17,13 +27,38 @@
         var margin = 75,
             width = 1400 - margin,
             height = 600 - margin;
+        d3.select("body")
+        .append("h2")
+        .text("World cup")
+        .style("text-align", "center");
 
+         var years = [];
+
+        for(var i = 1930; i < 2015; i += 4) {
+            if(i !== 1942 && i !== 1946) {
+              years.push(i);
+            };
+          }
+        
         var svg = d3.select("body")
             .append("svg")
             .attr("width", width + margin)
             .attr("height", height + margin)
             .append('g')
             .attr('class', 'map');
+
+
+
+        var buttons=d3.select("body")
+        .append("div")
+        .attr("class",'years_buttons')
+        .selectAll('years')
+        .data(years)
+        .enter()
+        .append('div')
+        .text(function(d){
+          return d;
+        })
 
         var projection = d3.geo.mercator()
                                .scale(140)
@@ -141,13 +176,7 @@
 
           }
           
-          var years = [];
-
-          for(var i = 1930; i < 2015; i += 4) {
-            if(i !== 1942 && i !== 1946) {
-              years.push(i);
-            };
-          }
+         
 
           var year_idx = 0;
 
@@ -158,6 +187,25 @@
 
             if(year_idx >= years.length) {
                 clearInterval(year_interval);
+                var buttons=d3.select("body")
+                  .append("div")
+                  .attr("class",'years_buttons')
+                  .selectAll('years')
+                  .data(years)
+                  .enter()
+                  .append('div')
+                  .text(function(d){
+                    return d;
+                });
+              buttons.on("click", function(d){
+                d3.select(this)
+                .translation()
+                .duration(500)
+                .style("bacground", lightBlue)
+                .style("color", white);
+                update(d);
+
+              });
             }
           }, 1000);
       }
