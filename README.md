@@ -1,4 +1,4 @@
-# data-visualization-with-d3
+# Data Visualization With d3 and Dimple
 
 [Final visualization](https://github.com/AhmetHamzaEmra/data-visualization-with-d3-and-Dimple/tree/master/Project)
 
