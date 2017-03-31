@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <script src="http://d3js.org/d3.v3.min.js"></script>
     <style>
+    svg { margin: 10px 15% }
+    body { background-color: #f5f5f5 }
+ 
     </style>
-    <script type="text/javascript">  
+    <script type="text/javascript"> 
+      
+
       // drawing the map
       function draw(geo_data) {
         "use strict";
@@ -13,7 +20,18 @@
             width = 1400 - margin,
             height = 600 - margin;
 
-        var svg = d3.select("body")
+
+        var tooltip = d3.select( 'body' )
+                        .append( 'div' )
+                        .attr( 'class', 'tooltip' )
+                        .style( 'position', 'absolute' )
+                        .style( 'z-index', '9999' )
+                        .style( 'visibility', 'visible' )
+                        .text( 'tooltip' ) 
+
+
+
+        var svg = d3.select("body").select('div')
             .append("svg")
             .attr("width", width + margin)
             .attr("height", height + margin)
@@ -33,7 +51,8 @@
                      .attr('d', path) // add a attribute  d 
                      .style('fill', 'lightBlue') // fill with blue color 
                      .style('stroke', 'black') // cover them with black strike 
-                     .style('stroke-width', 0.5); // stroke's widtg 
+                     .style('stroke-width', 0.5);
+                     
         // function for puting point to map 
         function plot_points(data) {
             
@@ -99,7 +118,16 @@
                .attr('fill', 'rgb(247, 0, 0)') // fill with red (rgb= red green blue)
                .attr('stroke', 'black') // covering them with black stroke 
                .attr('stroke-width', 0.7) // stroke width
-               .attr('opacity', 0.7); // opacity is important for countries thats are soo close so we can even see them even one of them is on other one. 
+               .attr('opacity', 0.7).on( "mousemove", function( d ) {
+                        console.log( d.values['countries'] );
+                        return tooltip.style( 'visibility', 'visible' )
+                        .html( d.values['countries']  )
+                        .style( "color", "white" )
+                        .style( "top", ( d3.event.layerY ) + "px" )
+                        .style( "left", ( d3.event.layerX ) + "px" );
+                    } ).on( "mouseout", function( ) {
+                        return tooltip.style( 'visibility', 'hidden' )
+                    } );  // opacity is important for countries thats are soo close so we can even see them even one of them is on other one. 
          
 
 
@@ -117,8 +145,9 @@
       </script>
   </head>
 <body>
-<h1 style="text-align: center;">Total attacks by countries and number of people died</h1>
-  <script type="text/javascript">
+<div>
+<h1 style="text-align: center;" class="display-3"><b>Total attacks by countries and number of people died</b></h1>
+  <script type="text/javascript" >
   /*
     Use D3 to load the GeoJSON file
     */
@@ -126,11 +155,11 @@
 d3.json("world_countries.json", draw);
   </script>
 
-  <h2 style="text-align: center;">About the data set</h2>
+  <h2 class="display-4" style="text-align: center;" >About the data set</h2>
   <div class="text" style="margin: 10px 20%;">
-  <p style="text-align: center; "> The Global Terrorism Database (GTD) is an open-source database including information on terrorist attacks around the world from 1970 through 2015 (with annual updates planned for the future). The GTD includes systematic data on domestic as well as international terrorist incidents that have occurred during this time period and now includes more than 150,000 cases. The database is maintained by researchers at the National Consortium for the Study of Terrorism and Responses to Terrorism (START), headquartered at the University of Maryland. <a href="https://www.kaggle.com/START-UMD/gtd">kaggle</a></p></div>
-
-  <p style="text-align: center;">
+  <p class="lead" style="text-align: center; "> The Global Terrorism Database (GTD) is an open-source database including information on terrorist attacks around the world from 1970 through 2015 (with annual updates planned for the future). The GTD includes systematic data on domestic as well as international terrorist incidents that have occurred during this time period and now includes more than 150,000 cases. The database is maintained by researchers at the National Consortium for the Study of Terrorism and Responses to Terrorism (START), headquartered at the University of Maryland. <a href="https://www.kaggle.com/START-UMD/gtd">kaggle</a></p></div>
+</div>
+  <p class="lead" style="text-align: center;">
   
   * every red circle respersent country<br />
   * radius of circle respresent number of people who died in attacks</p>
